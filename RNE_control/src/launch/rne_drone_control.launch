@@ -1,0 +1,7 @@
+<launch>
+
+
+  <include file="$(find geometric_controller)/launch/sitl_geometric_controller.launch">
+  </include> 
+
+</launch>

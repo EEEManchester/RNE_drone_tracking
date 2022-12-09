@@ -1,0 +1,40 @@
+cmake_minimum_required(VERSION 3.0.2)
+project(rne_control)
+
+## Compile as C++11, supported in ROS Kinetic and newer
+add_compile_options(-std=c++17)
+
+## Find catkin macros and libraries
+## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
+## is used, also find other catkin packages
+find_package(catkin REQUIRED COMPONENTS
+  geometry_msgs
+  roscpp
+  apriltag_ros
+)
+
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES drone_offboard_example
+   CATKIN_DEPENDS geometry_msgs mavros roscpp
+#  DEPENDS gazebo_ros
+)
+
+
+# add all catkin package
+include_directories(
+# include
+  ${catkin_INCLUDE_DIRS}
+)
+
+
+
+# define executable
+add_executable(${PROJECT_NAME}_node src/rne_control.cpp)
+
+target_link_libraries(${PROJECT_NAME}_node
+${catkin_LIBRARIES}
+Eigen3::Eigen
+)
