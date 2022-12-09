@@ -23,12 +23,12 @@ void tagdetectCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr& msg
 
     if (number_tag_detected==1)
     {
-        ROS_INFO_STREAM("tag is detected");
+        ROS_INFO_STREAM_THROTTLE(5,"tag is detected");
         flag_detcect = true;
     }
     else
     {
-        ROS_WARN_STREAM("Tag is LOST");
+        ROS_WARN_STREAM_THROTTLE(5,"Tag is LOST");
         flag_detcect = false;
     }
     
@@ -42,11 +42,11 @@ void vsinputCallback(const geometry_msgs::TwistStamped::ConstPtr& msg)
     commands_vs[0] = msg->twist.linear.x;
     commands_vs[1] = msg->twist.linear.y;
     commands_vs[2] = msg->twist.linear.z;
-
+    ROS_INFO_STREAM("received vs setpoint" << commands_vs.transpose());
 }
 
 // callback function to receive trajectory setpoints mes from /reference/setpoint
-void traj_sub(const geometry_msgs::TwistStamped::ConstPtr& msg)
+void trajCallback(const geometry_msgs::TwistStamped::ConstPtr& msg)
 {
     setpoint_traj[0] = msg->twist.angular.x;
     setpoint_traj[1] = msg->twist.angular.y;
@@ -54,6 +54,7 @@ void traj_sub(const geometry_msgs::TwistStamped::ConstPtr& msg)
     setpoint_traj[3] = msg->twist.linear.x;
     setpoint_traj[4] = msg->twist.linear.y;
     setpoint_traj[5] = msg->twist.linear.z;    
+    ROS_INFO_STREAM("received trajectory setpoint" << setpoint_traj.transpose());
 
 }
 
@@ -71,7 +72,7 @@ int main(int argc, char* argv[])
     ros::Subscriber tag_sub = nh.subscribe("rne_control/tag_detections", 1, tagdetectCallback);
     ros::Subscriber vs_sub = nh.subscribe<geometry_msgs::TwistStamped>("rne_control/visual_servoing_setpoint", 1, vsinputCallback);
     // TODO choose topic
-    ros::Subscriber traj_sub = nh.subscribe<geometry_msgs::TwistStamped>("rne_control/trajectory/setpoint", 1, vsinputCallback);
+    ros::Subscriber traj_sub = nh.subscribe<geometry_msgs::TwistStamped>("rne_control/trajectory/setpoint", 1, trajCallback);
 
     ros::Publisher  setpoint_pub = nh.advertise<geometry_msgs::TwistStamped>("rne_control/reference/setpoint", 1);
     
@@ -112,18 +113,18 @@ int main(int argc, char* argv[])
             setpoint_control.twist.linear.z = commands_vs[2];
         }
 
-        ROS_INFO_STREAM("sent point is "<< setpoint_traj.transpose());
+        ROS_INFO_STREAM("sentpoint to publish is "<< setpoint_traj.transpose());
         setpoint_pub.publish(setpoint_control);
         
         if (flag_detcect == true)
         {
             num_detcect ++;
-            ROS_INFO_STREAM("Num of detecting tag is increasing");
+            ROS_INFO_STREAM_THROTTLE(5, "Num of detecting tag is increasing");
         }
         else
         {
             num_detcect= 0;
-            ROS_WARN_STREAM("Num of detecting tag is set to ZERO");
+            ROS_WARN_STREAM_THROTTLE(5,"Num of detecting tag is set to ZERO");
         }
         
 
