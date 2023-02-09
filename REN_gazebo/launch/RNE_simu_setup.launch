@@ -1,21 +1,18 @@
 <launch>
-  <!-- end of hack -->
 
   <!-- Configuration of Jackal which you would like to simulate.
        See jackal_description for details. -->
 
   <!-- lanch drone model, px4 control, fake vicon and map vicon to mavros_vision -->
   <include file="$(find drone_simulation_tools)/launch/drone_px4_onboard.launch">
+    <arg name="drone_x" value="0"/>
+    <arg name="drone_y" value="0"/>
+    <arg name="drone_z" value="1.25"/> 
   </include>
 
     <!-- Spawn Jackal -->
-  <group ns="jackal_robot">  
+  <!-- <group ns="jackal_robot">   -->
   <arg name="front_laser" default="false" />
-  <arg name="x" default="1" />
-  <arg name="y" default="1" />
-  <arg name="z" default="1.0" />
-  <arg name="yaw" default="0" />
-
   <arg name="default_config" value="front_laser" if="$(arg front_laser)" />
   <arg name="default_config" value="base" unless="$(arg front_laser)" />
   <!-- end of hack -->
@@ -27,26 +24,18 @@
   <!-- Optionally enable teleop for the simulation -->
   <arg name="joystick" default="true" />  
 
-
-  <!-- Load Jackal's description, controllers, and teleop nodes. -->
-  <include file="$(find rne_gazebo)/launch/RNE_jackal_description.launch">
+  <include file="$(find jackal_gazebo)/launch/spawn_jackal.launch">
+    <arg name="x" value="0" />
+    <arg name="y" value="0" />
+    <arg name="z" value="1.0" />
+    <arg name="yaw" value="0" />
     <arg name="config" value="$(arg config)" />
-  </include>
-
-  <include file="$(find jackal_control)/launch/control.launch" />
-
-  <include file="$(find jackal_control)/launch/teleop.launch">
     <arg name="joystick" value="$(arg joystick)" />
   </include>
 
-  <!-- Spawn Jackal -->
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
-	      args="-urdf -model jackal -param robot_description -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw)" />
-
-
   <include file="$(find jackal_viz)/launch/view_robot.launch">
   </include>
-  </group>
+  <!-- </group> -->
 
 
 </launch>  

@@ -41,7 +41,7 @@ without gazebo gui
 ## Simulation test
 1. launch simulation: word+robot+fake qualisys+mavros
 ```shell
-  roslaunch rne_gazebo RNE_simu_px4.launch
+  roslaunch rne_gazebo RNE_simu_setup.launch
 ```
 2. launch drone controller + takeoff setpoint
 ```shell
