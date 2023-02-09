@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 
         if (num_detcect<=THROSHOLD)
         {
-            ROS_INFO_STREAM_THROTTLE(5,"Trajectory setpoint is sent");
+            ROS_INFO_STREAM_THROTTLE(5, "Trajectory setpoint is sent as " << setpoint_traj.transpose());
             setpoint_control.twist.angular.x = setpoint_traj[0];
             setpoint_control.twist.angular.y = setpoint_traj[1];
             setpoint_control.twist.angular.z = setpoint_traj[2];
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
         }
         else
         {
-            ROS_INFO_STREAM("Visual servoing setpoint is sent");
+            ROS_INFO_STREAM_THROTTLE(5,"Visual servoing setpoint is sent");
 
 
             setpoint_control.twist.angular.x = setpoint_traj[0];
@@ -141,12 +141,12 @@ int main(int argc, char* argv[])
         if (flag_detcect == true)
         {
             num_detcect ++;
-            ROS_INFO_STREAM_THROTTLE(2, "Num of detecting tag is increasing");
+            ROS_INFO_STREAM_THROTTLE(3, "Num of detecting tag is increasing");
         }
         else
         {
             num_detcect= 0;
-            ROS_WARN_STREAM("Num of detecting tag is set to ZERO");
+            ROS_WARN_STREAM_THROTTLE(3, "Num of detecting tag is set to ZERO");
         }
         
 
