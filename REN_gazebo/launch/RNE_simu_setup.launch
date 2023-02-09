@@ -1,6 +1,20 @@
 <launch>
-  <!-- Configuration of Jackal which you would like to simulate.
-       See jackal_description for details. -->
+
+  <arg name="use_sim_time" default="true" />
+  <arg name="gui" default="true" />
+  <arg name="headless" default="false" />
+  <arg name="paused" default="true"/>
+  <arg name="world_name" default="$(find gazebo_ros)/worlds/empty_world.world" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="0" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="use_sim_time" value="$(arg use_sim_time)" />
+    <arg name="headless" value="$(arg headless)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="world_name" value="$(arg world_name)" />
+  </include>
+
 
     <!-- Spawn Jackal -->
   <!-- <group ns="jackal_robot">   -->
@@ -19,7 +33,7 @@
   <include file="$(find jackal_gazebo)/launch/spawn_jackal.launch">
     <arg name="x" value="0" />
     <arg name="y" value="0" />
-    <arg name="z" value="0.11" />
+    <arg name="z" value="0.10" />
     <arg name="yaw" value="0" />
     <!-- <arg name="config" value="$(arg config)" />
     <arg name="joystick" value="$(arg joystick)" /> -->
@@ -29,12 +43,54 @@
   </include>
   <!-- </group> -->
 
-  <!-- lanch drone model, px4 control, fake vicon and map vicon to mavros_vision -->
-  <include file="$(find drone_simulation_tools)/launch/drone_px4_onboard.launch">
-    <arg name="drone_x" value="0"/>
-    <arg name="drone_y" value="0"/>
-    <arg name="drone_z" value="0.38"/> 
+  <arg name="drone_x" default="0" />
+  <arg name="drone_y" default="0" />
+  <arg name="drone_z" default="0.32" />
+
+ <!-- px4 in gazebo -->
+ <!-- single drone in gazebo environment-->
+  <include file="$(find px4)/launch/px4_simu.launch">
+    <arg name="x" value="$(arg drone_x)"/>
+    <arg name="y" value="$(arg drone_y)"/>
+    <arg name="z" value="$(arg drone_z)"/> 
   </include>
 
+  
+  <!-- Mavros for simulation -->
+  <include file="$(find mavros)/launch/node.launch">
+      <arg name="fcu_url" default="udp://:14540@127.0.0.1:14557"/>
+      <arg name="gcs_url" default="" />
+      <arg name="tgt_system" default="1" />
+      <arg name="tgt_component" default="1" />
+      <arg name="log_output" default="screen" />
+      <arg name="fcu_protocol" default="v2.0" />
+      <arg name="respawn_mavros" default="false" />
+      <arg name="pluginlists_yaml" value="$(find mavros)/launch/px4_pluginlists.yaml" />
+      <arg name="config_yaml" value="$(find mavros)/launch/px4_config.yaml" />
+  </include>
+
+ <!-- Pkg fake qualisys-->
+ <!-- get drone pose and generte mocap topic vision/drone-->
+  <include file="$(find fake_qualisys)/launch/fake_vicon.launch">
+    <arg name="drone_name" value="drone"/>  <!-- output topic is /qualisys/drone -->
+    <arg name="gazebo_drone_link_name" value="iris::base_link"/> <!-- iris::base_link is the base link of drone mode -->
+    <arg name="mocap_rate" value="200"/>
+
+    <param name="drone_name" type="str" value="$(arg drone_name)"/>
+    <param name="link_name" type="str" value="$(arg gazebo_drone_link_name)"/>
+    <param name="mocap_rate" type="int" value="$(arg mocap_rate)"/>
+  </include>
+
+
+ <!-- Pkg mocap_to_mavros_sim-->
+ <!-- subscrip to /vision/drone and pub to /mavros/vision_pose/pose-->
+  <include file="$(find mocap_to_mavros_sim)/launch/mocap_to_mavros_sim.launch">
+    <!--<arg name="drone_name" default="drone" />-->
+    <arg name="mocap_frequency" value="50"/>
+
+    <rosparam param="drone_name" subst_value="True">$(arg drone_name)</rosparam>
+    <rosparam param="external_vision_type">"vision"</rosparam>  <!--mocap-->
+    <rosparam param="mocap_frequency" subst_value="True">$(arg mocap_frequency)</rosparam>
+  </include>
 </launch>  
   
