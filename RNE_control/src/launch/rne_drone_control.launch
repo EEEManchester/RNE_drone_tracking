@@ -38,12 +38,11 @@
   <arg name="drone_home_z" default="0"/>
   <arg name="drone_takeoff_height" default="0"/>
 
-  <node pkg="geometric_controller" type="geometric_controller_takeoff_node_trajectory" name="geometric_takeoff" output="screen">
+  <node pkg="rne_control" type="rne_control_drone_traj_node" name="rne_drone_traj" output="screen">
       <param name="home_x" value="$(arg drone_home_x)" />
       <param name="home_y" value="$(arg drone_home_y)" />
       <param name="home_z" value="$(arg drone_home_z)" />
       <param name="take_off_height" value="$(arg drone_takeoff_height)" />
-      <remap from="command/bodyrate_command" to="/mavros/setpoint_raw/attitude"/>
   </node>  
 
 </launch>
