@@ -7,7 +7,7 @@
 #include <geometry_msgs/TwistStamped.h>
 
 
-static constexpr int ROS_RATE = 30;
+static constexpr int ROS_RATE = 50;
 static const Eigen::Vector2f targ_position_desXY= Eigen::MatrixXf::Zero(2, 1);
 static geometry_msgs::TwistStamped comman_vs;
 
@@ -38,7 +38,7 @@ void tagdetectCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr& msg
     // TODO height
 
     // 2. Call P control
-    float Kp = 5;
+    float Kp = 2;
     Eigen::Vector2f u_vs= Eigen::MatrixXf::Zero(2, 1);
 
     // vel setpoint in XY plane

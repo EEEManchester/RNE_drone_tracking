@@ -10,7 +10,7 @@
 static constexpr int ROS_RATE = 30;
 static geometry_msgs::TwistStamped comman_vs;
 static bool flag_detcect = false; 
-static constexpr int THROSHOLD = 50;
+static constexpr int THROSHOLD = 2;
 
 static Eigen::Vector3f commands_vs= Eigen::MatrixXf::Zero(3, 1);
 static Eigen::VectorXf setpoint_traj= Eigen::MatrixXf::Zero(6, 1);
@@ -107,7 +107,13 @@ int main(int argc, char* argv[])
         }
         else
         {
-            ROS_INFO_STREAM("visual servoing control is sent");
+            ROS_INFO_STREAM("Visual servoing setpoint is sent");
+            // set position to be 0
+            setpoint_control.twist.angular.x = 0;
+            setpoint_control.twist.angular.y = 0;
+            setpoint_control.twist.angular.z = setpoint_traj[2];   
+
+
             setpoint_control.twist.linear.x = commands_vs[0];
             setpoint_control.twist.linear.y = commands_vs[1];
             setpoint_control.twist.linear.z = commands_vs[2];
@@ -119,12 +125,12 @@ int main(int argc, char* argv[])
         if (flag_detcect == true)
         {
             num_detcect ++;
-            ROS_INFO_STREAM_THROTTLE(5, "Num of detecting tag is increasing");
+            ROS_INFO_STREAM_THROTTLE(1, "Num of detecting tag is increasing");
         }
         else
         {
             num_detcect= 0;
-            ROS_WARN_STREAM_THROTTLE(5,"Num of detecting tag is set to ZERO");
+            ROS_WARN_STREAM("Num of detecting tag is set to ZERO");
         }
         
 

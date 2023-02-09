@@ -6,6 +6,37 @@
     - tams_apriltags
     - apriltag_ros
     - usb_cam
+    - mavros_controller
+    - jackel
+
+## Setup simulation
+1. install jackel simulation in gazebo.
+For ros noetic
+```shell
+  sudo apt-get install ros-noetic-jackal-simulator ros-noetic-jackal-desktop ros-noetic-jackal-navigation
+```     
+If ros-noetic-jackal-desktop cannot be located, then
+```shell
+  wget https://packages.clearpathrobotics.com/public.key -O - | sudo apt-key add -
+sudo sh -c 'echo "deb https://packages.clearpathrobotics.com/stable/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/clearpath-latest.list'
+sudo apt-get update
+```
+
+Launch a jackel in simulation
+```shell
+  roslaunch jackal_gazebo jackal_world.launch
+```
+without gazebo gui
+  1.
+  ```shell
+    roslaunch jackal_gazebo jackal_world.launch gui:=false
+  ```
+  2. view in rviz
+  ```shell
+    roslaunch jackal_viz view_robot.launch
+  ```  
+2. install and configure a drone with PX4 firmware
+
 
 ## Simulation test
 1. launch simulation: word+robot+fake qualisys+mavros
