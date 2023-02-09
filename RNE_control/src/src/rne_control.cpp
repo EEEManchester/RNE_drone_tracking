@@ -108,15 +108,31 @@ int main(int argc, char* argv[])
         else
         {
             ROS_INFO_STREAM("Visual servoing setpoint is sent");
-            // set position to be 0
-            setpoint_control.twist.angular.x = 0;
-            setpoint_control.twist.angular.y = 0;
-            setpoint_control.twist.angular.z = setpoint_traj[2];   
 
 
-            setpoint_control.twist.linear.x = commands_vs[0];
-            setpoint_control.twist.linear.y = commands_vs[1];
-            setpoint_control.twist.linear.z = commands_vs[2];
+            setpoint_control.twist.angular.x = setpoint_traj[0];
+            setpoint_control.twist.angular.y = setpoint_traj[1];
+            setpoint_control.twist.angular.z = setpoint_traj[2];
+
+            setpoint_control.twist.linear.x = setpoint_traj[3];
+            setpoint_control.twist.linear.y = setpoint_traj[4];
+            setpoint_control.twist.linear.z = setpoint_traj[5];
+
+            ROS_INFO_STREAM("vel command x dire is " << commands_vs[0]);
+            ROS_INFO_STREAM("vel command y dire is " << commands_vs[1]);
+
+
+            // ros::param::set("/another_integer", 0);
+            // ros::param::set("/another_integer", 0);
+            // // set position to be 0
+            // setpoint_control.twist.angular.x = 0;
+            // setpoint_control.twist.angular.y = 0;
+            // setpoint_control.twist.angular.z = setpoint_traj[2];   
+
+
+            // setpoint_control.twist.linear.x = commands_vs[0];
+            // setpoint_control.twist.linear.y = commands_vs[1];
+            // setpoint_control.twist.linear.z = commands_vs[2];
         }
 
         ROS_INFO_STREAM("sentpoint to publish is "<< setpoint_traj.transpose());

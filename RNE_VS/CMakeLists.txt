@@ -42,3 +42,10 @@ target_link_libraries(${PROJECT_NAME}_node
 ${catkin_LIBRARIES}
 Eigen3::Eigen
 )
+
+# define executable
+add_executable(${PROJECT_NAME}_tag_navig_node src/rne_tag_navig.cpp)
+
+target_link_libraries(${PROJECT_NAME}_tag_navig_node
+${catkin_LIBRARIES}
+)

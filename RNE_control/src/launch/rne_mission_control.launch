@@ -6,10 +6,19 @@
   <remap from="rne_control/visual_servoing_setpoint" to="visual_servoing_setpoint" />  
   <remap from="rne_control/trajectory/setpoint" to="trajectory/setpoint" />  
   <remap from="rne_control/reference/setpoint" to="reference/setpoint" /> 
-  <node pkg="rne_control" type="rne_control_node" name="rne_control" output="screen">
-  </node>
 
-  <node pkg="geometric_controller" type="geometric_controller_takeoff_node" name="geometric_takeoff" output="screen">
-  </node>  
+
+  <include file="$(find rne_control)/launch/rne_drone_control.launch">
+    <arg name="drone_home_x" value="0"/>
+    <arg name="drone_home_y" value="0"/>
+    <arg name="drone_home_z" value="0.32"/>
+    <arg name="drone_takeoff_height" value="0.5"/>
+  </include>
+
+
+  <!-- <node pkg="rne_control" type="rne_control_node" name="rne_control" output="screen">
+  </node> -->
+
+   
 
 </launch>
