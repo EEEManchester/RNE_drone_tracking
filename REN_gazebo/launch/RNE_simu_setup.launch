@@ -1,14 +1,6 @@
 <launch>
-
   <!-- Configuration of Jackal which you would like to simulate.
        See jackal_description for details. -->
-
-  <!-- lanch drone model, px4 control, fake vicon and map vicon to mavros_vision -->
-  <include file="$(find drone_simulation_tools)/launch/drone_px4_onboard.launch">
-    <arg name="drone_x" value="0"/>
-    <arg name="drone_y" value="0"/>
-    <arg name="drone_z" value="1.25"/> 
-  </include>
 
     <!-- Spawn Jackal -->
   <!-- <group ns="jackal_robot">   -->
@@ -27,16 +19,22 @@
   <include file="$(find jackal_gazebo)/launch/spawn_jackal.launch">
     <arg name="x" value="0" />
     <arg name="y" value="0" />
-    <arg name="z" value="1.0" />
+    <arg name="z" value="0.11" />
     <arg name="yaw" value="0" />
-    <arg name="config" value="$(arg config)" />
-    <arg name="joystick" value="$(arg joystick)" />
+    <!-- <arg name="config" value="$(arg config)" />
+    <arg name="joystick" value="$(arg joystick)" /> -->
   </include>
 
   <include file="$(find jackal_viz)/launch/view_robot.launch">
   </include>
   <!-- </group> -->
 
+  <!-- lanch drone model, px4 control, fake vicon and map vicon to mavros_vision -->
+  <include file="$(find drone_simulation_tools)/launch/drone_px4_onboard.launch">
+    <arg name="drone_x" value="0"/>
+    <arg name="drone_y" value="0"/>
+    <arg name="drone_z" value="0.38"/> 
+  </include>
 
 </launch>  
   
