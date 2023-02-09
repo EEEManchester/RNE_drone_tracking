@@ -97,6 +97,11 @@ int main(int argc, char* argv[])
         if (num_detcect<=THROSHOLD)
         {
             ROS_INFO_STREAM_THROTTLE(5, "Trajectory setpoint is sent as " << setpoint_traj.transpose());
+            ros::param::set("/geometric_controller/Kp_x", 2);
+            ros::param::set("/geometric_controller/Kp_y", 2);
+            ros::param::set("/geometric_controller/Kv_x", 0.5);
+            ros::param::set("/geometric_controller/Kv_y", 0.5);    
+
             setpoint_control.twist.angular.x = setpoint_traj[0];
             setpoint_control.twist.angular.y = setpoint_traj[1];
             setpoint_control.twist.angular.z = setpoint_traj[2];
@@ -109,13 +114,17 @@ int main(int argc, char* argv[])
         {
             ROS_INFO_STREAM_THROTTLE(5,"Visual servoing setpoint is sent");
 
-
-            setpoint_control.twist.angular.x = setpoint_traj[0];
-            setpoint_control.twist.angular.y = setpoint_traj[1];
+            ros::param::set("/geometric_controller/Kp_x", 0);
+            ros::param::set("/geometric_controller/Kp_y", 0);
+            ros::param::set("/geometric_controller/Kv_x", 7);
+            ros::param::set("/geometric_controller/Kv_y", 7);
+            
+            setpoint_control.twist.angular.x = 0;
+            setpoint_control.twist.angular.y = 0;
             setpoint_control.twist.angular.z = setpoint_traj[2];
 
-            setpoint_control.twist.linear.x = setpoint_traj[3];
-            setpoint_control.twist.linear.y = setpoint_traj[4];
+            setpoint_control.twist.linear.x = commands_vs[0];
+            setpoint_control.twist.linear.y = commands_vs[1];
             setpoint_control.twist.linear.z = setpoint_traj[5];
 
             ROS_INFO_STREAM("vel command x dire is " << commands_vs[0]);
