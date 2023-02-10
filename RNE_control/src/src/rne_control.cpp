@@ -23,12 +23,12 @@ void tagdetectCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr& msg
 
     if (number_tag_detected==1)
     {
-        ROS_INFO_STREAM_THROTTLE(5,"tag is detected");
+        ROS_INFO_STREAM("tag is detected");
         flag_detcect = true;
     }
     else
     {
-        ROS_WARN_STREAM_THROTTLE(5,"Tag is LOST");
+        ROS_WARN_STREAM("Tag is LOST");
         flag_detcect = false;
     }
     
@@ -42,7 +42,7 @@ void vsinputCallback(const geometry_msgs::TwistStamped::ConstPtr& msg)
     commands_vs[0] = msg->twist.linear.x;
     commands_vs[1] = msg->twist.linear.y;
     commands_vs[2] = msg->twist.linear.z;
-    ROS_INFO_STREAM("received vs setpoint" << commands_vs.transpose());
+    ROS_INFO_STREAM_THROTTLE(5, "received vs setpoint" << commands_vs.transpose());
 }
 
 // callback function to receive trajectory setpoints mes from /reference/setpoint
@@ -96,11 +96,7 @@ int main(int argc, char* argv[])
 
         if (num_detcect<=THROSHOLD)
         {
-            ROS_INFO_STREAM_THROTTLE(5, "Trajectory setpoint is sent as " << setpoint_traj.transpose());
-            ros::param::set("/geometric_controller/Kp_x", 2);
-            ros::param::set("/geometric_controller/Kp_y", 2);
-            ros::param::set("/geometric_controller/Kv_x", 0.5);
-            ros::param::set("/geometric_controller/Kv_y", 0.5);    
+            ROS_INFO_STREAM_THROTTLE(5, "Trajectory setpoint is sent as " << setpoint_traj.transpose());  
 
             setpoint_control.twist.angular.x = setpoint_traj[0];
             setpoint_control.twist.angular.y = setpoint_traj[1];
@@ -114,10 +110,13 @@ int main(int argc, char* argv[])
         {
             ROS_INFO_STREAM_THROTTLE(5,"Visual servoing setpoint is sent");
 
-            ros::param::set("/geometric_controller/Kp_x", 0);
-            ros::param::set("/geometric_controller/Kp_y", 0);
-            ros::param::set("/geometric_controller/Kv_x", 7);
-            ros::param::set("/geometric_controller/Kv_y", 7);
+            // setpoint_control.twist.angular.x = setpoint_traj[0];
+            // setpoint_control.twist.angular.y = setpoint_traj[1];
+            // setpoint_control.twist.angular.z = setpoint_traj[2];
+
+            // setpoint_control.twist.linear.x = setpoint_traj[3];
+            // setpoint_control.twist.linear.y = setpoint_traj[4];
+            // setpoint_control.twist.linear.z = setpoint_traj[5];
             
             setpoint_control.twist.angular.x = 0;
             setpoint_control.twist.angular.y = 0;
@@ -150,12 +149,12 @@ int main(int argc, char* argv[])
         if (flag_detcect == true)
         {
             num_detcect ++;
-            ROS_INFO_STREAM_THROTTLE(3, "Num of detecting tag is increasing");
+            ROS_INFO_STREAM_THROTTLE(1, "Num of detecting tag is increasing");
         }
         else
         {
             num_detcect= 0;
-            ROS_WARN_STREAM_THROTTLE(3, "Num of detecting tag is set to ZERO");
+            ROS_WARN_STREAM_THROTTLE(1, "Num of detecting tag is set to ZERO");
         }
         
 

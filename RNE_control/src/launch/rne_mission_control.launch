@@ -34,12 +34,12 @@
             <param name="attctrl_constant" value="0.3"/>
             <param name="normalizedthrust_constant" value="0.06"/> <!-- 0.06 -->
             <param name="normalizedthrust_offset" value="0.1"/>
-            <param name="Kp_x" value="2.0" />
-            <param name="Kp_y" value="2.0" />
+            <param name="Kp_x" value="0.0" />
+            <param name="Kp_y" value="0.0" />
             <param name="Kp_z" value="36" />
             <param name="KposI_z" value="0.04" />
-            <param name="Kv_x" value="0.5"/>
-            <param name="Kv_y" value="0.5"/>
+            <param name="Kv_x" value="6"/>
+            <param name="Kv_y" value="6"/>
             <param name="Kv_z" value="12"/>        
 
     </node>
@@ -48,7 +48,7 @@
   <arg name="drone_home_x" default="0"/>
   <arg name="drone_home_y" default="0"/>
   <arg name="drone_home_z" default="0.32"/>
-  <arg name="drone_takeoff_height" default="1"/>
+  <arg name="drone_takeoff_height" default="1.3"/>
 
   <node pkg="rne_control" type="rne_control_drone_traj_node" name="rne_drone_traj" output="screen">
       <param name="home_x" value="$(arg drone_home_x)" />

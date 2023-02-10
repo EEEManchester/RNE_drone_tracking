@@ -10,6 +10,7 @@
 static constexpr int ROS_RATE = 50;
 static const Eigen::Vector2f targ_position_desXY= Eigen::MatrixXf::Zero(2, 1);
 static geometry_msgs::TwistStamped comman_vs;
+static float Kp;
 
 // tag_position to store tag position in xy plane 
 Eigen::Vector2f tag_position_XY = Eigen::MatrixXf::Zero(2, 1);
@@ -38,7 +39,7 @@ void tagdetectCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr& msg
     // TODO height
 
     // 2. Call P control
-    float Kp = 2;
+    // float Kp = 2;
     Eigen::Vector2f u_vs= Eigen::MatrixXf::Zero(2, 1);
 
     // vel setpoint in XY plane
@@ -53,9 +54,16 @@ void tagdetectCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr& msg
     comman_vs.twist.angular.y = 0;
     comman_vs.twist.angular.z = 0;
 
-    comman_vs.twist.linear.x = u_vs[0];
-    comman_vs.twist.linear.y = u_vs[1];
+    // Frame differences
+    // x ->y
+    // y-> x
+    comman_vs.twist.linear.x = u_vs[1];
+    comman_vs.twist.linear.y = u_vs[0];
     comman_vs.twist.linear.z = 0;
+
+    ROS_INFO_STREAM("x_vel command is "<< comman_vs.twist.linear.x);
+    ROS_INFO_STREAM("y_vel command is "<< comman_vs.twist.linear.y);
+
     
     seq++;
 }
@@ -68,9 +76,11 @@ int main(int argc, char* argv[])
 
     // define ros handle
     ros::NodeHandle nh;
+    ros::NodeHandle nh_private_("~");
 
     ros::Rate loop_rate(ROS_RATE);
 
+    nh_private_.param<float>("Kp", Kp, 1);
 
 // DONE      1.1. get ariltag detection massage: position of tag in image frame
 // DONE   1.2. save position into Eigen

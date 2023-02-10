@@ -1,7 +1,9 @@
 <launch>
 
+  <arg name="VS_Kp" default="0.7" />
 
-  <node pkg="rne_vs" type="rne_vs_node" name="rne_vs_node" output="screen">          
+  <node pkg="rne_vs" type="rne_vs_node" name="rne_vs_node" output="screen">     
+    <param name="Kp" value="$(arg VS_Kp)" />     
   </node>
 
   <!-- <include file="$(find apriltag_ros)/launch/rne_continuous_detection.launch">

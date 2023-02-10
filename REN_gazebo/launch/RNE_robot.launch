@@ -17,12 +17,17 @@
          command="$(find xacro)/xacro --inorder $(find tams_apriltags)/urdf/apriltag_rne.xacro" />
 
   <node name="spawn_apriltag_demo" pkg="gazebo_ros" type="spawn_model" 
-        args="-urdf -param robot_description -x 0 -y 0 -z 0 -R 0 -P 0 -Y 0 -model apriltags" 
+        args="-urdf -param robot_description -x 0.2 -y 0 -z 0 -R 0 -P 0 -Y 0 -model apriltags" 
         respawn="false" output="screen" />
 
-  <!-- run arpiltag_ros to detect apriltag_rne -->       
-  <include file="$(find apriltag_ros)/launch/rne_continuous_detection.launch">
+  <!-- run arpiltag_ros to detect apriltag_rne        -->
+  <!-- <include file="$(find apriltag_ros)/launch/rne_continuous_detection.launch"> -->
     <!-- more default parameters can be changed here -->
-  </include>
+  <!-- </include> -->
+
+  <!-- run arpiltag_ros to detect apriltag_rne -->       
+  <include file="$(find rne_vs)/launch/rne_vs.launch">
+    <!-- more default parameters can be changed here -->
+  </include>  
 
 </launch>
