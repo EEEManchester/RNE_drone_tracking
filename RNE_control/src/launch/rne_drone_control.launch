@@ -1,7 +1,48 @@
 <launch>
 
 
-  <include file="$(find geometric_controller)/launch/sitl_geometric_controller.launch">
-  </include> 
+  <arg name="mav_name" default="iris"/>
+
+  <!-- choose controller -->
+  <!-- command_input = 2 leads to geometric_attcontroller
+       command_input = 1 leads to attcontroller.
+  -->
+       
+  <arg name="command_input" default="2" />
+
+  <!-- manually arm and offboard drone -->
+  <arg name="gazebo_simulation" default="true" />
+
+    <node pkg="geometric_controller" type="geometric_controller_node" name="geometric_controller" output="screen">
+            <param name="mav_name" type="string" value="$(arg mav_name)" />
+            <remap from="command/bodyrate_command" to="/mavros/setpoint_raw/attitude"/>
+            <param name="ctrl_mode" value="$(arg command_input)" />
+            <param name="enable_sim" value="$(arg gazebo_simulation)" />
+            <param name="max_acc" value="10.0" />
+            <!--Params specific for Iris copter-->
+            <param name="attctrl_constant" value="0.3"/>
+            <param name="normalizedthrust_constant" value="0.06"/> <!-- 0.06 -->
+            <param name="normalizedthrust_offset" value="0.1"/>
+            <param name="Kp_x" value="2.0" />
+            <param name="Kp_y" value="2.0" />
+            <param name="Kp_z" value="36" />
+            <param name="KposI_z" value="0.04" />
+            <param name="Kv_x" value="0.5"/>
+            <param name="Kv_y" value="0.5"/>
+            <param name="Kv_z" value="12"/>        
+
+    </node>
+
+  <arg name="drone_home_x" default="0"/>
+  <arg name="drone_home_y" default="0"/>
+  <arg name="drone_home_z" default="0"/>
+  <arg name="drone_takeoff_height" default="0"/>
+
+  <node pkg="rne_control" type="rne_control_drone_traj_node" name="rne_drone_traj" output="screen">
+      <param name="home_x" value="$(arg drone_home_x)" />
+      <param name="home_y" value="$(arg drone_home_y)" />
+      <param name="home_z" value="$(arg drone_home_z)" />
+      <param name="take_off_height" value="$(arg drone_takeoff_height)" />
+  </node>  
 
 </launch>

@@ -39,13 +39,22 @@ without gazebo gui
 
 
 ## Simulation test
-1. launch simulation: word+robot+fake qualisys+mavros
+1. launch simulation: 
+  - empty word in gazebo
+  - jackal robot + apriltag
+  - drone with framework being px4
+  - fake vicon
+  - onboard node + mavros
+  
 ```shell
   roslaunch rne_gazebo RNE_simu_setup.launch
 ```
 2. launch drone controller + takeoff setpoint
+  - mavros_controller
+  - drone home position
+  - drone takeoff height
 ```shell
-  roslaunch rne_control rne_drone_control.launch
+  roslaunch rne_control rne_mission_control.launch
 ```
 2. launch apriltag and visual servoing
 ```shell
@@ -53,7 +62,7 @@ without gazebo gui
 ```
 3. launch switch node
 ```
-  roslaunch rne_control rne_mission_control.launch
+  
 ```
 
 rosrun plotjuggler plotjuggler

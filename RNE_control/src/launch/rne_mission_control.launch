@@ -2,14 +2,67 @@
 
 
   <!-- set takeoff setpoint -->
-  <remap from="rne_control/tag_detections" to="tag_detections" />  
-  <remap from="rne_control/visual_servoing_setpoint" to="visual_servoing_setpoint" />  
-  <remap from="rne_control/trajectory/setpoint" to="trajectory/setpoint" />  
-  <remap from="rne_control/reference/setpoint" to="reference/setpoint" /> 
+    <!-- <remap from="reference/setpoint" to="trajectory/setpoint"/>
+    <remap from="rne_control/tag_detections" to="tag_detections" />  
+    <remap from="rne_control/visual_servoing_setpoint" to="visual_servoing_setpoint" />  
+    <remap from="rne_control/trajectory/setpoint" to="trajectory/setpoint" />  
+    <remap from="rne_control/reference/setpoint" to="reference/setpoint" />  -->
+
+
+
+
+
+  <!-- mavros controller for drone -->
+  <arg name="mav_name" default="iris"/>
+
+  <!-- choose controller -->
+  <!-- command_input = 2 leads to geometric_attcontroller
+       command_input = 1 leads to attcontroller.
+  -->
+  <arg name="command_input" default="2" />
+
+  <!-- manually arm and offboard drone -->
+  <arg name="gazebo_simulation" default="true" />
+
+    <node pkg="geometric_controller" type="geometric_controller_node" name="geometric_controller" output="screen">
+            <param name="mav_name" type="string" value="$(arg mav_name)" />
+            <remap from="command/bodyrate_command" to="/mavros/setpoint_raw/attitude"/>
+            <param name="ctrl_mode" value="$(arg command_input)" />
+            <param name="enable_sim" value="$(arg gazebo_simulation)" />
+            <param name="max_acc" value="10.0" />
+            <!--Params specific for Iris copter-->
+            <param name="attctrl_constant" value="0.3"/>
+            <param name="normalizedthrust_constant" value="0.06"/> <!-- 0.06 -->
+            <param name="normalizedthrust_offset" value="0.1"/>
+            <param name="Kp_x" value="0.0" />
+            <param name="Kp_y" value="0.0" />
+            <param name="Kp_z" value="36" />
+            <param name="KposI_z" value="0.04" />
+            <param name="Kv_x" value="6"/>
+            <param name="Kv_y" value="6"/>
+            <param name="Kv_z" value="12"/>        
+
+    </node>
+
+  <!-- trajectory for drone -->
+  <arg name="drone_home_x" default="0"/>
+  <arg name="drone_home_y" default="0"/>
+  <arg name="drone_home_z" default="0.32"/>
+  <arg name="drone_takeoff_height" default="2"/>
+
+  <node pkg="rne_control" type="rne_control_drone_traj_node" name="rne_drone_traj" output="screen">
+      <param name="home_x" value="$(arg drone_home_x)" />
+      <param name="home_y" value="$(arg drone_home_y)" />
+      <param name="home_z" value="$(arg drone_home_z)" />
+      <param name="take_off_height" value="$(arg drone_takeoff_height)" />
+  </node>  
+
+
+  <!-- mission control for drone -->
   <node pkg="rne_control" type="rne_control_node" name="rne_control" output="screen">
+
   </node>
 
-  <node pkg="geometric_controller" type="geometric_controller_takeoff_node" name="geometric_takeoff" output="screen">
-  </node>  
+   
 
 </launch>

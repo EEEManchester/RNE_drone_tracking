@@ -11,6 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   roscpp
   apriltag_ros
+  mavros
+  librobot_traj_generate
 )
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
@@ -35,6 +37,14 @@ include_directories(
 add_executable(${PROJECT_NAME}_node src/rne_control.cpp)
 
 target_link_libraries(${PROJECT_NAME}_node
+${catkin_LIBRARIES}
+Eigen3::Eigen
+)
+
+# define executable
+add_executable(${PROJECT_NAME}_drone_traj_node src/rne_drone_traj.cpp)
+
+target_link_libraries(${PROJECT_NAME}_drone_traj_node 
 ${catkin_LIBRARIES}
 Eigen3::Eigen
 )
