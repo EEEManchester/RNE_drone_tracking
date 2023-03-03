@@ -24,7 +24,7 @@ void tagdetectCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr& msg
     // if no tag is detected, then skip this turn of callback function
     if (number_tag_detected != 1)
     {
-        ROS_INFO_STREAM("No tag is detected");
+        ROS_INFO_STREAM_THROTTLE(1, "No tag is detected");
         return; // skip this callback function since not all markers are detected
     }
 
@@ -35,7 +35,7 @@ void tagdetectCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr& msg
 
 
     // Debug: to print rag position
-    ROS_INFO_STREAM("Tag in image plane"<<tag_position_XY.transpose());
+    ROS_INFO_STREAM_THROTTLE(3,"Tag in image plane"<<tag_position_XY.transpose());
     // TODO height
 
     // 2. Call P control
@@ -57,12 +57,12 @@ void tagdetectCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr& msg
     // Frame differences
     // x ->y
     // y-> x
-    comman_vs.twist.linear.x = u_vs[1];
-    comman_vs.twist.linear.y = u_vs[0];
+    comman_vs.twist.linear.x = u_vs[0];
+    comman_vs.twist.linear.y = u_vs[1];
     comman_vs.twist.linear.z = 0;
 
-    ROS_INFO_STREAM("x_vel command is "<< comman_vs.twist.linear.x);
-    ROS_INFO_STREAM("y_vel command is "<< comman_vs.twist.linear.y);
+    ROS_INFO_STREAM_THROTTLE(1,"x_vel command is "<< comman_vs.twist.linear.x);
+    ROS_INFO_STREAM_THROTTLE(1, "y_vel command is "<< comman_vs.twist.linear.y);
 
     
     seq++;

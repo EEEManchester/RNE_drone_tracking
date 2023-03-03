@@ -65,8 +65,8 @@
       <arg name="log_output" default="screen" />
       <arg name="fcu_protocol" default="v2.0" />
       <arg name="respawn_mavros" default="false" />
-      <arg name="pluginlists_yaml" value="$(find mavros)/launch/px4_pluginlists.yaml" />
-      <arg name="config_yaml" value="$(find mavros)/launch/px4_config.yaml" />
+      <arg name="pluginlists_yaml" value="$(find rne_gazebo)/config/px4_pluginlists.yaml" />
+      <arg name="config_yaml" value="$(find rne_gazebo)/config/px4_config.yaml" />
   </include>
 
  <!-- Pkg fake qualisys-->

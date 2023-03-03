@@ -48,7 +48,7 @@
   <arg name="drone_home_x" default="0"/>
   <arg name="drone_home_y" default="0"/>
   <arg name="drone_home_z" default="0.32"/>
-  <arg name="drone_takeoff_height" default="1.3"/>
+  <arg name="drone_takeoff_height" default="2"/>
 
   <node pkg="rne_control" type="rne_control_drone_traj_node" name="rne_drone_traj" output="screen">
       <param name="home_x" value="$(arg drone_home_x)" />

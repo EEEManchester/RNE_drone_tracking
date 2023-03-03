@@ -3,17 +3,33 @@
 #include <iostream>
 #include <cstdlib>  
 #include <Eigen/Dense>
+#include <Eigen/Geometry>
 #include <apriltag_ros/AprilTagDetectionArray.h>
 #include <geometry_msgs/TwistStamped.h>
-
+#include <geometry_msgs/TransformStamped.h>
 
 static constexpr int ROS_RATE = 50;
 static geometry_msgs::TwistStamped comman_vs;
 static bool flag_detcect = false; 
 static constexpr int THROSHOLD = 5;
 
-static Eigen::Vector3f commands_vs= Eigen::MatrixXf::Zero(3, 1);
+static Eigen::Vector3d commands_vs= Eigen::MatrixXd::Zero(3, 1);
 static Eigen::VectorXf setpoint_traj= Eigen::MatrixXf::Zero(6, 1);
+
+static Eigen::Matrix3d R02d;
+static Eigen::Matrix3d Rd2c;
+
+
+void dronePoseCallback(const geometry_msgs::TransformStamped::ConstPtr& msg) 
+{
+	Eigen::Quaterniond q_02d(msg->transform.rotation.w, msg->transform.rotation.x, msg->transform.rotation.y, msg->transform.rotation.z);
+
+    // normalise
+    q_02d.normalize();
+
+    // quaterion to rotation matrix
+    R02d = q_02d.toRotationMatrix(); 
+}
 
 
 // callback function to receive detection mes from /tag_detections
@@ -23,12 +39,12 @@ void tagdetectCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr& msg
 
     if (number_tag_detected==1)
     {
-        ROS_INFO_STREAM("tag is detected");
+        ROS_INFO_STREAM_THROTTLE(1,"tag is detected");
         flag_detcect = true;
     }
     else
     {
-        ROS_WARN_STREAM("Tag is LOST");
+        ROS_INFO_STREAM_THROTTLE(1,"Tag is LOST");
         flag_detcect = false;
     }
     
@@ -38,11 +54,17 @@ void tagdetectCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr& msg
 // callback function to receive Visual Servoing mes from /visual_servoing_setpoint
 void vsinputCallback(const geometry_msgs::TwistStamped::ConstPtr& msg)
 {
+    Eigen::Vector3d commands_vs_cf(msg->twist.linear.x, msg->twist.linear.y, msg->twist.linear.z);
 
-    commands_vs[0] = msg->twist.linear.x;
-    commands_vs[1] = msg->twist.linear.y;
-    commands_vs[2] = msg->twist.linear.z;
-    ROS_INFO_STREAM_THROTTLE(5, "received vs setpoint" << commands_vs.transpose());
+    // commands_vs[0] = msg->twist.linear.x;
+    // commands_vs[1] = msg->twist.linear.y;
+    // commands_vs[2] = msg->twist.linear.z;
+    Rd2c =  Eigen::AngleAxisd(1.57, Eigen::Vector3d::UnitY());
+    commands_vs = R02d * Rd2c * commands_vs_cf;
+    // std::cout<<commands_vs_cf.transpose()<<std::endl;
+    // std::cout<<Rd2c<<std::endl;
+    // std::cout<<R02d<<std::endl;
+    ROS_INFO_STREAM_THROTTLE(2, "received vs setpoint" << commands_vs.transpose());
 }
 
 // callback function to receive trajectory setpoints mes from /reference/setpoint
@@ -54,7 +76,7 @@ void trajCallback(const geometry_msgs::TwistStamped::ConstPtr& msg)
     setpoint_traj[3] = msg->twist.linear.x;
     setpoint_traj[4] = msg->twist.linear.y;
     setpoint_traj[5] = msg->twist.linear.z;    
-    ROS_INFO_STREAM_THROTTLE(5, "received trajectory setpoint" << setpoint_traj.transpose());
+    ROS_INFO_STREAM_THROTTLE(2, "received trajectory setpoint" << setpoint_traj.transpose());
 
 }
 
@@ -73,6 +95,9 @@ int main(int argc, char* argv[])
     ros::Subscriber vs_sub = nh.subscribe<geometry_msgs::TwistStamped>("visual_servoing_setpoint", 1, vsinputCallback);
     // TODO choose topic
     ros::Subscriber traj_sub = nh.subscribe<geometry_msgs::TwistStamped>("trajectory/setpoint", 1, trajCallback);
+
+    // choose topic
+    ros::Subscriber dronepose_sub = nh.subscribe("vicon/drone", 1, dronePoseCallback);
 
     ros::Publisher  setpoint_pub = nh.advertise<geometry_msgs::TwistStamped>("reference/setpoint", 1);
     
@@ -96,7 +121,7 @@ int main(int argc, char* argv[])
 
         if (num_detcect<=THROSHOLD)
         {
-            ROS_INFO_STREAM_THROTTLE(5, "Trajectory setpoint is sent as " << setpoint_traj.transpose());  
+            ROS_INFO_STREAM_THROTTLE(2, "Trajectory setpoint is sent as " << setpoint_traj.transpose());  
 
             setpoint_control.twist.angular.x = setpoint_traj[0];
             setpoint_control.twist.angular.y = setpoint_traj[1];
@@ -108,8 +133,8 @@ int main(int argc, char* argv[])
         }
         else
         {
-            ROS_INFO_STREAM_THROTTLE(5,"Visual servoing setpoint is sent");
-
+            ROS_INFO_STREAM_THROTTLE(2,"Visual servoing setpoint is sent");
+            // test
             // setpoint_control.twist.angular.x = setpoint_traj[0];
             // setpoint_control.twist.angular.y = setpoint_traj[1];
             // setpoint_control.twist.angular.z = setpoint_traj[2];
@@ -118,6 +143,7 @@ int main(int argc, char* argv[])
             // setpoint_control.twist.linear.y = setpoint_traj[4];
             // setpoint_control.twist.linear.z = setpoint_traj[5];
             
+            // vs servoing
             setpoint_control.twist.angular.x = 0;
             setpoint_control.twist.angular.y = 0;
             setpoint_control.twist.angular.z = setpoint_traj[2];
@@ -126,8 +152,20 @@ int main(int argc, char* argv[])
             setpoint_control.twist.linear.y = commands_vs[1];
             setpoint_control.twist.linear.z = setpoint_traj[5];
 
-            ROS_INFO_STREAM("vel command x dire is " << commands_vs[0]);
-            ROS_INFO_STREAM("vel command y dire is " << commands_vs[1]);
+            ROS_INFO_STREAM_THROTTLE(1, "vel command x dire is " << commands_vs[0]);
+            ROS_INFO_STREAM_THROTTLE(1, "vel command y dire is " << commands_vs[1]);
+
+            // posi
+            // setpoint_control.twist.angular.x = commands_vs[0];
+            // setpoint_control.twist.angular.y = commands_vs[1];
+            // setpoint_control.twist.angular.z = setpoint_traj[2];
+
+            // setpoint_control.twist.linear.x = 0;
+            // setpoint_control.twist.linear.y = 0;
+            // setpoint_control.twist.linear.z = setpoint_traj[5];
+
+            // ROS_INFO_STREAM("pos command x dire is " << commands_vs[0]);
+            // ROS_INFO_STREAM("pos command y dire is " << commands_vs[1]);
 
 
             // ros::param::set("/another_integer", 0);
